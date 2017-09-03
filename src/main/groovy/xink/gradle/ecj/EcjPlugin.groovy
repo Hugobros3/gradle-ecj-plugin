@@ -75,7 +75,7 @@ class EcjPlugin implements Plugin<Project> {
                 logger.info "invoking ecj $compilerArgs"
                 jvmArgs << '-cp' << jvmClasspath.join(':') << ECJ_MAIN_CLS 
                 options.fork executable: 'java', jvmArgs: jvmArgs
-                options.define compilerArgs: compilerArgs
+                options.compilerArgs += compilerArgs
             }
         }
     }
