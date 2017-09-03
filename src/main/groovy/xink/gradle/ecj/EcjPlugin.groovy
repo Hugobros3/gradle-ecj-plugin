@@ -55,6 +55,16 @@ class EcjPlugin implements Plugin<Project> {
             doFirst {
                 // compiler args
                 def compilerArgs = []
+                def jvmArgs = []
+                def jvmClasspath = [ecjConf.asPath]
+
+                def lombokFiles = classpath.filter {it.name.matches(/^lombok(-[0-9\.]+)?\.jar$/)}
+                if (!lombokFiles.isEmpty()) {
+                    def lombokFile = lombokFiles.getSingleFile().canonicalPath
+                    logger.info "found lombok at $lombokFile"
+                    jvmArgs << '-javaagent:' + lombokFile + '=ECJ'
+                    jvmClasspath << lombokFile
+                }
 
                 if (project.ecj.encoding) compilerArgs << '-encoding' << project.ecj.encoding
 
@@ -63,7 +73,8 @@ class EcjPlugin implements Plugin<Project> {
 
                 // tell ant to use ecj in a forked process
                 logger.info "invoking ecj $compilerArgs"
-                options.fork executable: 'java', jvmArgs: [ '-cp', ecjConf.asPath, ECJ_MAIN_CLS ]
+                jvmArgs << '-cp' << jvmClasspath.join(':') << ECJ_MAIN_CLS 
+                options.fork executable: 'java', jvmArgs: jvmArgs
                 options.define compilerArgs: compilerArgs
             }
         }
