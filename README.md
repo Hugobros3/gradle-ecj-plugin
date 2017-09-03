@@ -11,20 +11,17 @@ This updated version of gradle-ecj:
 To use the ECJ plugin, you must include and apply it in your build scripts:
 
 ```groovy
-apply plugin: 'ecj'
+apply plugin: 'de.johni0702.ecj'
 
 buildscript {
     repositories {
-        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
-            name = 'GitHub'
-            addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
-        }
-
-        mavenCentral()
+        mavenCentral() // for ecj
+        maven { url 'https://jitpack.io' } // for this plugin
     }
 
     dependencies {
-        classpath 'xinthink:gradle-ecj:1.0-Beta'
+        // Replace master-SNAPSHOT with a specific commit hash to not always get the latest version
+        classpath 'com.github.johni0702:gradle-ecj-plugin:master-SNAPSHOT'
     }
 }
 ```
