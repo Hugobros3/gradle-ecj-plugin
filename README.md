@@ -1,10 +1,10 @@
 # The ECJ Plugin for Gradle
 This a plugin for using the [Eclipse JDT core](http://eclipse.org/jdt/core/) batch compler (ECJ) in [Gradle](http://gradle.org) builds.
 
-The very first version of gradle-ecj (1.0-Beta):
+This updated version of gradle-ecj:
 
-- requires Gradle 1.0-milestone-8a and later
-- integrates [ECJ 3.7.1](http://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj)
+- has been tested with Gradle 3.5.1
+- integrates [ECJ 4.6.1](http://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj)
 
 ## Usage
 ### Apply the plugin
@@ -33,7 +33,7 @@ buildscript {
 By default, ecj plugin use the following compilation options or flags:
 
   - UTF-8 encoding
-  - source and target compatibility, use values in [Gradle Compile Spec](http://gradle.org/docs/current/dsl/org.gradle.api.tasks.compile.Compile.html)
+  - source and target compatibility as configured for the JavaCompile task
   - compilation warning and error flags, please refer to [Eclipse JDT Help](http://help.eclipse.org/), section: `Java development user guide / Tasks / Compiling Java code / Using batch compiler`, gradle-ecj uses default values descripted in that document
 
 You can override these default settings, by providing an `ecj` configuration closure, like this:

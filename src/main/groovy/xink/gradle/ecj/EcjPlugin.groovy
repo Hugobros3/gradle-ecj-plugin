@@ -18,7 +18,7 @@ package xink.gradle.ecj
 import static xink.gradle.ecj.EcjPluginExtension.*
 
 import org.gradle.api.*
-import org.gradle.api.tasks.compile.Compile
+import org.gradle.api.tasks.compile.JavaCompile
 
 /**
  * Bring Eclipse JDT core batch compiler to gradle builds
@@ -27,10 +27,11 @@ import org.gradle.api.tasks.compile.Compile
  */
 class EcjPlugin implements Plugin<Project> {
 
-    private static final ARTIFACT_ECJ = 'org.eclipse.jdt.core.compiler:ecj:3.7.1'
+    private static final ARTIFACT_ECJ = 'org.eclipse.jdt.core.compiler:ecj:4.6.1'
     private static final ECJ_MAIN_CLS = 'org.eclipse.jdt.internal.compiler.batch.Main'
 
     private logger
+    private ecjConf
 
     /**
      * {@inheritDoc}
@@ -41,8 +42,8 @@ class EcjPlugin implements Plugin<Project> {
 
         project.plugins.apply org.gradle.api.plugins.JavaPlugin
 
-        project.configurations.add 'ecj'
-        project.dependencies.add 'ecj', ARTIFACT_ECJ
+        def ecjDep = project.dependencies.create(ARTIFACT_ECJ)
+        ecjConf = project.configurations.detachedConfiguration ecjDep
         project.extensions.create 'ecj', EcjPluginExtension
 
         configCompiler project
@@ -50,13 +51,10 @@ class EcjPlugin implements Plugin<Project> {
 
     private configCompiler = { project->
 
-        project.tasks.withType(Compile) {
+        project.tasks.withType(JavaCompile) {
             doFirst {
                 // compiler args
-                def compilerArgs = [
-                    '-source', sourceCompatibility,
-                    '-target', targetCompatibility,
-                ]
+                def compilerArgs = []
 
                 if (project.ecj.encoding) compilerArgs << '-encoding' << project.ecj.encoding
 
@@ -65,7 +63,7 @@ class EcjPlugin implements Plugin<Project> {
 
                 // tell ant to use ecj in a forked process
                 logger.info "invoking ecj $compilerArgs"
-                options.fork executable: 'java', jvmArgs: [ '-cp', project.configurations.ecj.asPath, ECJ_MAIN_CLS ]
+                options.fork executable: 'java', jvmArgs: [ '-cp', ecjConf.asPath, ECJ_MAIN_CLS ]
                 options.define compilerArgs: compilerArgs
             }
         }
