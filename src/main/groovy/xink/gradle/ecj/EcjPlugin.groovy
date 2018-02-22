@@ -27,7 +27,7 @@ import org.gradle.api.tasks.compile.JavaCompile
  */
 class EcjPlugin implements Plugin<Project> {
 
-    private static final ARTIFACT_ECJ = 'org.eclipse.jdt.core.compiler:ecj:4.6.1'
+    private static final ARTIFACT_ECJ = 'org.eclipse.jdt:ecj:3.13.100'
     private static final ECJ_MAIN_CLS = 'org.eclipse.jdt.internal.compiler.batch.Main'
 
     private logger
@@ -67,6 +67,11 @@ class EcjPlugin implements Plugin<Project> {
                 }
 
                 if (project.ecj.encoding) compilerArgs << '-encoding' << project.ecj.encoding
+
+		if(it.sourceCompatibility.contains('1.9')) {
+			compilerArgs << '-1.9'
+			println 'Java 9+ compile detected. appending necessary args'
+		}
 
                 configCompileFlags project.ecj.warn, DEF_WARNS, compilerArgs, '-warn:' // warning options
                 configCompileFlags project.ecj.err, DEF_ERRS, compilerArgs, '-err:' // warnings should be converted to errors
